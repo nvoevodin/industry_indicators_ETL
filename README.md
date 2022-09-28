@@ -169,8 +169,43 @@ Describe nature of data. Is it sensitive or not. Public or not. Can/should/will 
 TLC Employees authenticate to the Azure Server using their network email address and password. Multi-factor authentication is enabled for these users. Authentication is provided and managed by IT. An Admin can create roles for devs and users.
 
 
-#Other
+# Take-aways
 
-Other relevant information here.
+There is a bunch of different options out there when it comes to selecting a data storage solution. Microsoft, Google, and Amazone offer a lot of very similar services. There is also solutions that can be done in-house. Here are my take aways based on this project and some other large projects that I managed and was involved in.
 
+## Main lesson
+
+If your organization has an IT department, you most likely wont have a say in choosing a type of DB solution. For example, the City government of NY is covered by MS Azure umbrella of services, so even if my natural preference is AWS RDS, there is no way that my organization switches to it. It is not a bad thing though, because there are another few major things that stem from it. These things are usability, maintainability, and security. If I try to introduce a much faster analytics database, but the syntax is weird, documentation is scarce, and analysts do not know how to use it - it wont be very usable. If I am the only person who knows it in and out, then what happens when I leave the organization - nobody will be able to maintain it. Finally, with lack of maintenance and support might come security risks. From my experience, developers often do not like to think about boring security when developing, however, security is very important.
+
+Lets say none of that is an issue and we can get anything we want under the umbrella of our IT. We do not have to think about security and maintainability - its all covered. What is the best set of tools for the job. The answer is: it depends on the job. 
+
+
+## 3 Examples
+
+Here are 3 different types of set ups that I had experience with. Im going to discuss when each should and should not be implemented. 
+
+### TLC DW 
+
+This is the project described in this documentation. As you could see from the diagrams there are a few simultanious solutions going on. First, there is a datalake blob storage/or a local storage where the organization stores raw files. The files can be flat or any other objects. The files are loaded into the main AZURE SQL DB, then my stored procedures extract, transform, and load the aggragated table into the DW. These aggregated tables are then fed into visualization tools and app. It is almost an optimal setup for the organization and the size of data that we work with. It is considered BIG DATA, but it is still not big enoght to warrant a distributed processing system like Hadoop.
+And most importantly, 99% of data that we receive are flat and used for analytics. I am saying that it is almost optimal because the initial load into the database happens in batches instead of transactions. This happens because TLC doesnt have a centralized API through whitch vendors would stream their trip records. An ideal situation would be to load one of few (if simultaneous) trips at a time and then my DW takes over. 
+
+A logical question is: why not use just one Azure SQL DB for everything? There reason for multiple tools in this setup is because there are tradeoffs with using different tools. For instance, if we are using a T-SQL database, it will be convenient and fast to load the data but might get slow when the data gets too big. This happened at TLC. If you are using an analytics DB like Druid or Clickhouse, it is super fast on reads but slow and inconveniet for writes.
+
+Opinion: This setup is good for working with data that are < 100TB in size. It does not have to be AZURE as GOOGLE and AWS have almost identical services. Based on my understanding of data at the Trevor Project, it can be a nice setup.
+
+### VolleyPal App (No-SQL + Firebase + MySQL combo)
+
+VolleyPal is a social media mobile app for volleyball players that I created. It is currently on pause. There is a bunch of different sections (tabs, views) in the app. These secions display and collect various data. The data are not always the same (unstructured), therefore it is not a good design to use regular SQL. I tried using MySQL for most backend operations at first, but later started switching more and more to No-SQL MongoDB and serverless Firebase. On top of unstructured data, performance is a huge thing to consider when designing a backend for an app. Response time must be instantenious, No-SQL provides that by scaling horizontally if needed. SQL solutions usually scale vertically by adding more processing power. Here are the links to the backend code.
+
+https://github.com/nvoevodin/volleypal_chat_server.git
+https://github.com/nvoevodin/volleypal_main_api.git
+
+
+### Distributed Data Repository + SQL or Spark 
+
+The bottom of the first diagram display a data repository. At the moment, im prototyping a pseudo distributed storage system at work with a DuckDB virtual database on top of it. This allows me to achieve 1000 times pull speeds compared to our Azure SQL DB. This is as close as I can get to a distributed processing at TLC. 
+
+In the absence of alternatives, this is a good way for me to achieve greater afficiency at work. However, it is my understanding that you should not be using HDFS or anything like that unless your data are so huge that a regular RDBMS cant handle it or if your incoming data are overwhelimgly huge. 
+
+<a href="https://imgflip.com/i/6v16tn"><img src="https://i.imgflip.com/6v16tn.jpg" title="made at imgflip.com"/></a><div><a href="https://imgflip.com/memegenerator">from Imgflip Meme Generator</a></div>
 
