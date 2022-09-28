@@ -10,8 +10,8 @@ The Data Team, collaborating with IT, built out a data warehouse that automatica
 
 1. Who is the requestor(s) of this project
 
-    -TLC Policy Division
-    -TLC Execution Office
+    - TLC Policy Division
+    - TLC Executive Office
 
 2. What problem the project aims to solve
 
@@ -25,7 +25,11 @@ Start: 05-01-2020, deadline: ongoing
 
 1. Technology used (programming stack, other software like Tableau?)
 
-    -MS T-SQL, SQL Server, SSMS, Python, R
+    - MS T-SQL 
+    - SQL Server 
+    - SSMS 
+    - Python 
+    - R
 
 2. Permissions/access to folders required and where obtained
 
@@ -83,7 +87,15 @@ Industry Indicators Table is one of 55 current reports maintained by the DW. Ind
 
 The Industry Indicators is one of the most important datasets that the Policy Division produces. It informs our policy decisions, used by outside stakeholders, and feeds multiple public tools that we developed and maintain. To help you better understand the pipelines that make this and other reports happen here is a couple of diagrams:
 
+## TLC TRIP DATA FLOW
 ![overall_diagram](overall_diagram.png)
+The diagram above show a more general flow of trip data from our vendors (companies) to our main DB -> DW and local Repos -> BI Tools and Public.
+
+## INDUSTRY INDICATORS LIFECYCLE
+![industry_ind_diagram](industry_ind_diagram.png)
+
+
+
 
 # Public Dataset
 
