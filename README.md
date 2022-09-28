@@ -72,8 +72,40 @@ There are multiple permissions required for this project.
 
 Detailed description of how the project/requirement was completed. A new reader should be able to understand and follow the workflow that you outline here.
 
- 
+This is a big project and it had a few major stages:
 
+## Internal Planning
+
+- Discussions about the tech stack
+- Discussions about available resources
+- Discussions about the needs (tables, views, most requested metrics, usage, benefits)
+- Discussions about the roles
+- Discussions about data governance (standardization_work.pptx)
+- Timelines and milestones
+
+## Permissons and Infrastructure Provisioning
+
+- Presentation to the Deputy Commissioner of Policy/Data
+- Prioritization vote with all the departments heads
+- Request for resources to the procurement team
+- Provisioning of a separate azure server (admin rights, security settings, etc) 
+- Prototyping and server tests
+
+## Development
+
+- First batch of ~30 tables, more or less, evenly split between 4 devs
+- Helpful templates for sql scripts and stored procedures produced together with IT DB Admins
+- First milestone: 45 days. 30 working tables produced
+- QA testing (QA at IT + data analysts at the data team)
+- Job scheduling
+- Documentation
+
+## Maintenance and Additions
+
+- Addition of new 25 tables
+- Creation of pivot views
+- Opening of the server to other departments
+- Linking tables to BI tools
 
 
 # Use Workflow
@@ -93,15 +125,37 @@ The diagram above show a more general flow of trip data from our vendors (compan
 
 ## INDUSTRY INDICATORS LIFECYCLE
 ![industry_ind_diagram](industry_ind_diagram.png)
+This diagram shows the lifecycle of the Industry Indicators report. Here are the steps:
+
+1. 3 stored procedures (shl_agg_stored_procedure.sql, medallion_agg_stored_procedure.sql, fhv_agg_stored_procedure.sql ) are executed every 2 weeks on Tue at 2am populating 3 interim tables. Amount of data processed is around 500 million rows.
+2. Final stored procedure (combining_stored_procedure.sql) puts everything together
+3. The specs for the final table is in data_reports_monthly_indicators_all.xlsx (attached to the repo)
+4. The final table (data_reports_monthly.csv) feeds the preview dashboard.
+5. The head of data reviews the metrics and presents to the Commissioner to get the final green light to publish.
+6. This is the only (potential) manual step in this chain. In case of any data integrity issues, the head of data needs to stop the pipe to look into the issue.
+7. Once greenlit, a scheduled python script picks up the data and stores it in our AWS s3 bucket
+8. That file feeds the dataset on our website (https://www1.nyc.gov/site/tlc/about/aggregated-reports.page)
+9. One of the State of the Industry dashboards (https://analytics-tlc.github.io/state_of_industry_preview/)
+10. Industry Indicators Data Hub View (https://tlcanalytics.shinyapps.io/datahub/)
 
 
+### Public Dataset
 
-
-# Public Dataset
-
-The table is published on TLC website with the following columns: License Class, Trips Per Day, Farebox Per Day, Unique Drivers ,Unique Vehicles, Vehicles Per Day, Avg Days Vehicles on Road, Avg Hours Per Day Per Vehicle, Avg Days Drivers on Road , Avg Hours Per Day Per Driver, Avg Minutes Per Trip, Percent of Trips Paid with Credit Card, Trips Per Day Shared. 
+The table is published on TLC website with the following columns: License Class, Trips Per Day, Farebox Per Day, Unique Drivers ,Unique Vehicles, Vehicles Per Day, Avg Days Vehicles on Road, Avg Hours Per Day Per Vehicle, Avg Days Drivers on Road , Avg Hours Per Day Per Driver, Avg Minutes Per Trip, Percent of Trips Paid with Credit Card, Trips Per Day Shared. This dataset is used by a ton of external stakeholders within the city and a bunch of interested entities all over the world. 
 
 *Location: https://www1.nyc.gov/assets/tlc/downloads/csv/data_reports_monthly.csv*
+
+### TLC DATA HUB
+
+TLC DATAHUB is an interactive and dynamic app that is publicly available and allows for easier access to the data that we work with and release. The Industry indicators dataset feeds that app and has a whole separate dashboard spot in it.
+
+*Location: https://tlcanalytics.shinyapps.io/datahub/*
+
+### State of the Industry
+
+The State of the Industry makes TLC data easily digestible for the public and reflects the agency’s main monthly stats. Initially, it was meant as a supplement to the Commissioner’s monthly data updates. However, it became very popular and was requested to be made public. The portal is divided into the separate reports (Monthly Trips, Trips by Borough, Industry Indicators, HVFHV Wait times, and LL31 – Monthly Crashes) 
+
+*Location: https://analytics-tlc.github.io/state_of_industry_preview/*
 
 
 # Data Classification
@@ -112,7 +166,7 @@ Describe nature of data. Is it sensitive or not. Public or not. Can/should/will 
 
 # Authentication
 
-TLC Employees authenticate to the Azure Server using their network email address and password. Multi-factor authentication is enabled for these users. Authentication is provided and managed by IT.
+TLC Employees authenticate to the Azure Server using their network email address and password. Multi-factor authentication is enabled for these users. Authentication is provided and managed by IT. An Admin can create roles for devs and users.
 
 
 #Other
