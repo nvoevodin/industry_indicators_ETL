@@ -188,9 +188,9 @@ Here are 3 different types of setups that I had experience with. Im going to dis
 ### TLC DW 
 
 This is the project described in this documentation. As you could see from the diagrams there are a few simultaneous solutions going on. First, there is a data lake blob storage/or a local storage where the organization stores raw files. The files can be flat or any other objects. The files are loaded into the main AZURE SQL DB, then my stored procedures extract, transform, and load the aggregated table into the DW. These aggregated tables are then fed into visualization tools and apps. It is almost an optimal setup for the organization and the size of data that we work with. It is considered BIG DATA, but it is still not big enough to warrant a distributed processing system like Hadoop.
-And most importantly, 99% of the data that we receive are flat and used for analytics. I am saying that it is almost optimal because the initial load into the database happens in batches instead of transactions. This happens because TLC doesnt have a centralized API through which vendors would stream their trip records. An ideal situation would be to load one of a few (if simultaneous) trips at a time and then my DW takes over. 
+And most importantly, 99% of the data that we receive are flat and used for analytics. I am saying that it is almost optimal because the initial load into the database happens in batches instead of transactions. This happens because TLC doesnt have a centralized API through which vendors would stream their trip records. An ideal situation would be to load one or a few (if simultaneous) trips at a time and then my DW takes over. 
 
-A logical question is: why not use just one Azure SQL DB for everything? There reason for multiple tools in this setup is because there are tradeoffs with using different tools. For instance, if we are using a T-SQL database, it will be convenient and fast to load the data but might get slow when the data gets too big. This happened at TLC. If you are using an analytics DB like Druid or Clickhouse, it is super fast on reads but slow and inconvenient for writes.
+A logical question is: why not use just one Azure SQL DB for everything? The reason for multiple tools in this setup is because there are tradeoffs with using different tools. For instance, if we are using a T-SQL database, it will be convenient and fast to load the data but might get slow on reads when the data gets too big. This happened at TLC. If you are using an analytics DB like Druid or Clickhouse, it is super fast on reads but slow and inconvenient for writes.
 
 Opinion: This setup is good for working with data that are < 100TB in size. It does not have to be AZURE as GOOGLE and AWS have almost identical services. Based on my understanding of data at the Trevor Project, it can be a nice setup.
 
@@ -202,10 +202,12 @@ https://github.com/nvoevodin/volleypal_chat_server.git
 
 https://github.com/nvoevodin/volleypal_main_api.git
 
+Opinion: It is not easy to analyze an unstructured data. Unless your product is an app, it is better to stick with a version of a relational SQL DB.
+
 
 ### Distributed Data Repository + SQL or Spark 
 
-The bottom of the first diagram displays a data repository. At the moment, im prototyping a pseudo-distributed storage system at work with a DuckDB virtual database on top of it. This allows me to achieve 1000 times pull speeds compared to our Azure SQL DB. This is as close as I can get to distributed processing at TLC. 
+The bottom of the first diagram (Use Workflow section) displays a data repository. At the moment, im prototyping a pseudo-distributed storage system at work with a DuckDB virtual database on top of it. This allows me to achieve 1000 times pull speeds compared to our Azure SQL DB. This is as close as I can get to distributed processing at TLC. 
 
 In the absence of alternatives, this is a good way for me to achieve greater efficiency at work. However, it is my understanding that you should not be using HDFS or anything like that unless your data are so huge that a regular RDBMS cant handle it or if your incoming data are overwhelmingly huge.
 
