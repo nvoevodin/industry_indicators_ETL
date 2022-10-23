@@ -192,7 +192,7 @@ And most importantly, 99% of the data that we receive are flat and used for anal
 
 A logical question is: why not use just one Azure SQL DB for everything? The reason for multiple tools in this setup is because there are tradeoffs with using different tools. For instance, if we are using a T-SQL database, it will be convenient and fast to load the data but might get slow on reads when the data gets too big. This happened at TLC. If you are using an analytics DB like Druid or Clickhouse, it is super fast on reads but slow and inconvenient for writes.
 
-Opinion: This setup is good for working with data that are < 100TB in size. It does not have to be AZURE as GOOGLE and AWS have almost identical services. Based on my understanding of data at the Trevor Project, it can be a nice setup.
+Opinion: This setup is good for working with data that are < 100TB in size. It does not have to be AZURE as GOOGLE and AWS have almost identical services.
 
 ### VolleyPal App (No-SQL + Firebase + MySQL combo)
 
